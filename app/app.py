@@ -10,26 +10,23 @@ mydb = mysql.connector.connect(
     database="todos"
 )
 
+
 @app.route('/')
-def hello_world():
+def index():
     curr = mydb.cursor()
     curr.execute('select * from tasks')
     rows = curr.fetchall()
-
     return render_template('index.html', tasks = rows)
+
 
 @app.route('/add/<name>')
 def add_task(name):
-    query_task = ("INSERT INTO tasks "
-               "(name) "
-               "VALUES (%s)")
-
-    data_task = (name,)
+    task_query = "INSERT INTO tasks (name) VALUES (%s)"
+    task_data = (name,)
 
     cursor = mydb.cursor()
-    cursor.execute(query_task, data_task)
+    cursor.execute(task_query, task_data)
     task_no = cursor.lastrowid
+    mydb.commit()
 
-    return "added baby!"
-    
-
+    return f"added {task_no}"
